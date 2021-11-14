@@ -1,0 +1,96 @@
+<html>
+
+<head>
+
+    <style>
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 12px 20px;
+            box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            background-color: #f8f8f8;
+            font-size: 16px;
+            resize: none;
+        }
+
+        .button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+    </style>
+
+
+</head>
+<script>
+
+</script>
+
+<body>
+    <h5>Copy the order detail from the urbanpiper portal and paste here.</h5>
+    <textarea name="payload" id="payload" cols="30" rows="10"></textarea>
+    <button class="button" onclick="postmydata()">Submit</button>
+</body>
+<script>
+    function postmydata() {
+        var jsonstring1 = document.getElementById("payload").value;
+        try {
+            var x = JSON.parse(jsonstring1);
+            if (x && typeof x === "object") {
+                if ("customer" in x == true && "order" in x == true && "items" in x.order == true && "payment" in x.order == true && "store" in x.order == true) {
+
+                    var myHeaders = new Headers();
+                    myHeaders.append("Content-Type", "application/json");
+
+                    var raw = JSON.stringify({
+                        "strJSON": document.getElementById("payload").value,
+                        "IsCancel": "0",
+                        "OrderPolicy": "1",
+                        "sourceType": "0"
+                    });
+
+                    var requestOptions = {
+                        method: 'POST',
+                        headers: myHeaders,
+                        body: raw,
+                        redirect: 'follow'
+                    };
+                  //add the port number and the method name to which you want to to post the data.
+                  
+                    fetch("http://localhost:<port>/<method_name>", requestOptions) 
+                        .then(function (response) {
+                            if (response.status == 200) {
+                                alert("Successfully submitted the data");
+
+                            } else {
+                                alert("fail");
+
+                            }
+                        })
+                        .catch(error => console.log('error', error));
+
+                } else {
+                    console.log("some object fields are not valid");
+                    alert("A field  is missing or you have not copied the data from the portal corrrectly");
+                }
+
+            }
+        } catch (error) {
+            console.log("not valid json");
+            alert("You have not copied the order data from portal correctly, or something is missing");
+        }
+
+    }
+
+</script>
+
+</html>
